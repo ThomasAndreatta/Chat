@@ -46,12 +46,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.8F);
-            this.label1.Location = new System.Drawing.Point(37, 222);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F);
+            this.label1.Location = new System.Drawing.Point(6, 222);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(137, 31);
+            this.label1.Size = new System.Drawing.Size(209, 29);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Follow me";
+            this.label1.Text = "Account Instagram";
             // 
             // QrCode
             // 

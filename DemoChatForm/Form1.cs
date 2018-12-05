@@ -15,10 +15,8 @@ using System.Runtime.InteropServices;
 namespace DemoChatForm
 {
 # region COSE DA FARE
-    //all'arrivo di un messaggio con app chiusa cambia l'icona    
-    //da mettere nelle impo la lingua(ita eng) e la stealth mode(non mostrarla nella taskbar) con un menu a tendina   
-    //mettere "(ip)coso è entrato nella chat"
-    
+   //inserire la chat privata tramite un form di inserimento ip e porta(check se disponibile, fruga in internet) da aprire in un nuovo thread con un socket tipo asky nel gioco:)
+        
 #endregion
     public partial class Form1 : Form
     {
@@ -42,54 +40,72 @@ namespace DemoChatForm
         private QrCode code;
         const int mostra = 2, nascondi = 1;
         private KeyboardHook hook = new KeyboardHook();
+        
         #endregion
 
         #region Eventi Del Form
         public Form1()
-        {
-           
-
-            InitializeComponent();
-            
+        {           
+            InitializeComponent();            
             Username coso = new Username();
             coso.ControlBox = false;
             if (coso.ShowDialog() == DialogResult.OK)
             {
                 CheckForIllegalCrossThreadCalls = false;
                 tx = new InvioUDP();
-                tx.username = coso.username;
-                rx = new riceviUDP(9050);
-                th1 = new Thread(ascolta);
-                th1.Start();
+                if (tx.ip.Contains("127.0"))
+                {
+                    lstBoxMsg.Visible = false;
+                    btnInvia.Visible = false;
+                    txtMsg.Visible = false;
+                    lblConnessione.Visible = true;
+                }
+                else
+                {
+                    tx.username = coso.username;
+                    rx = new riceviUDP(9050);
+                    th1 = new Thread(ascolta);
+                    th1.Start();
+                    tx.invia($"                                   >>>({tx.ip}){tx.username.ToUpper()} ENTRA NELLA CHAT<<<", 1);
+                }
+               
             }
-
+            
             #region HOTKEY           
             RegisterHotKey(this.Handle, nascondi, 6, (int)Keys.H);
             RegisterHotKey(this.Handle, mostra, 6, (int)Keys.S);
             #endregion
 
-        }
-
+        }        
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
             {
-                this.Visible = false;   
+                this.Visible = false;                
             }
             else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
             {
                 this.Visible = true;   
             }
             base.WndProc(ref m);
-        }
-
-       
+        }       
         private void btnInvia_Click(object sender, EventArgs e)
         {
             if (txtMsg.Text != "")
             {
-                tx.invia(txtMsg.Text);
-                txtMsg.Clear();
+                invio(txtMsg.Text);
+            }
+        }
+        private void invio(string msg)
+        {
+            if (msg.Contains("<clear>"))
+            {
+                lstBoxMsg.Text = "";
+                lstBoxMsg.Items.Clear();
+            }
+            else
+            {
+                tx.invia(msg);
             }
         }
         private void txtMsg_KeyPress(object sender, KeyPressEventArgs e)
@@ -98,20 +114,68 @@ namespace DemoChatForm
             {
                 if (txtMsg.Text != "")
                 {
-                    tx.invia(txtMsg.Text);
-                    txtMsg.Clear();
+                    invio(txtMsg.Text);
                 }
 
             }
         }  
         private void form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            
-            continua = false;
-            th1.Abort();
+            try
+            {
+                th1.Abort();
+                continua = false;
+            }
+            catch (Exception)
+            { }
         }
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                this.Icon = Logo;
+            }
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.KeyPreview = true;
+        }
+        private void Form1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyValue == 13)
+            {
+                if (txtMsg.Text != "")
+                {
+                    invio(txtMsg.Text);
 
-       
+                }
+            }
+            else if (e.KeyValue != 46 && e.KeyValue != 8)
+            {
+                if (!txtMsg.Focused)
+                {
+                    txtMsg.Focus();
+                    txtMsg.Text += Convert.ToChar(e.KeyValue);
+                    txtMsg.SelectionStart = txtMsg.Text.Length;
+                }
+
+            }
+        }
+        private void txtMsg_TextChanged(object sender, EventArgs e)
+        {
+            if (txtMsg.Text.Length <= 0) return;
+            string s = txtMsg.Text.Substring(0, 1);
+            if (s != s.ToUpper())
+            {
+                int curSelStart = txtMsg.SelectionStart;
+                int curSelLength = txtMsg.SelectionLength;
+                txtMsg.SelectionStart = 0;
+                txtMsg.SelectionLength = 1;
+                txtMsg.SelectedText = s.ToUpper();
+                txtMsg.SelectionStart = curSelStart;
+                txtMsg.SelectionLength = curSelLength;
+            }
+        }
         #endregion
 
         #region Server
@@ -120,14 +184,13 @@ namespace DemoChatForm
             string msg;
             while (continua)
             {
-       
-                msg = rx.ricevi();
-                if (msg.Contains( "<clear>"))
+                msg = rx.ricevi();                
+                lstBoxMsg.Items.Add(msg);
+                if (this.MinimizeBox == true && !msg.Contains(tx.username.ToUpper()+" ENTRA NELLA CHAT"))
                 {
-                    lstBoxMsg.Items.Clear();
+                    this.Icon = MessNonLetto;
                 }
-                else
-                    lstBoxMsg.Items.Add(msg);
+                
             }
         }
         #endregion
@@ -191,18 +254,10 @@ namespace DemoChatForm
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
         }
-        private void toolStripButton5_Click(object sender, EventArgs e)
+        private void impostazioniIcon_Click(object sender, EventArgs e)
         {
-            Point a = new Point(10, 20);
-            //Notifica coso = new Notifica("banano", 10,Point a);
-            //coso.Show();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            this.KeyPreview = true;
-        }
-
+            this.Icon = MessNonLetto;
+        }     
         private void infoIcon_Click(object sender, EventArgs e)
         {
           
@@ -210,7 +265,5 @@ namespace DemoChatForm
             info.Show();
         }
         #endregion   
-
-
     }
 }

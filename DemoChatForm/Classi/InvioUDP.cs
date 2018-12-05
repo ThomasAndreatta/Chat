@@ -56,5 +56,10 @@ namespace DemoChatForm.Class
             data = Encoding.ASCII.GetBytes(username +">"+ msg);
             server.Send(data, data.Length);
         }
+        public void invia(string msg,int n)
+        {
+            data = Encoding.ASCII.GetBytes("" + msg);
+            server.Send(data, data.Length);
+        }
     }
 }

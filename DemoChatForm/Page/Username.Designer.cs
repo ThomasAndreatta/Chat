@@ -37,29 +37,28 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(151, 16);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(201, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.Size = new System.Drawing.Size(73, 17);
             this.label1.TabIndex = 5;
             this.label1.Text = "Username";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(14, 16);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox1.Location = new System.Drawing.Point(19, 20);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(125, 20);
+            this.textBox1.Size = new System.Drawing.Size(165, 22);
             this.textBox1.TabIndex = 4;
-            this.textBox1.Text = "drgf";
+            this.textBox1.Text = "Username";
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(56, 50);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Location = new System.Drawing.Point(75, 62);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 24);
+            this.button1.Size = new System.Drawing.Size(140, 30);
             this.button1.TabIndex = 3;
             this.button1.Text = "Conferma";
             this.button1.UseVisualStyleBackColor = true;
@@ -67,17 +66,18 @@
             // 
             // Username
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(214, 84);
+            this.ClientSize = new System.Drawing.Size(285, 103);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Username";
             this.Text = "Username";
+            this.Load += new System.EventHandler(this.Username_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -29,9 +29,7 @@ namespace DemoChatForm.Class
          int nWidthEllipse, // height of ellipse
          int nHeightEllipse // width of ellipse
      );
-        #endregion
-
-       
+        #endregion       
         public Notifica(string text, int second,Point point)
         {
             InitializeComponent(text);
@@ -58,19 +56,11 @@ namespace DemoChatForm.Class
                 Opacity =  Opacity -0.025;//no.
             }
             
-        }
-
-        private int coso()
-        {
-            
-            return 0;
-        }
-
+        }              
         private void Caricamento(object sender, EventArgs e)
         {
             this.SetDesktopLocation(x, y);
         }
-
         private void InitializeComponent(string text)
         {
             ShowInTaskbar = false;

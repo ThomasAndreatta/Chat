@@ -49,6 +49,9 @@ namespace DemoChatForm.Page
             }
         }
 
-     
+        private void Username_Load(object sender, EventArgs e)
+        {
+            this.ActiveControl = textBox1;
+        }
     }
 }

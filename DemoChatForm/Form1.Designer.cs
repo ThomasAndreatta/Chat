@@ -39,6 +39,7 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.lblConnessione = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,7 +59,7 @@
             // btnInvia
             // 
             this.btnInvia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnInvia.Location = new System.Drawing.Point(507, 423);
+            this.btnInvia.Location = new System.Drawing.Point(508, 422);
             this.btnInvia.Margin = new System.Windows.Forms.Padding(4);
             this.btnInvia.Name = "btnInvia";
             this.btnInvia.Size = new System.Drawing.Size(133, 28);
@@ -76,6 +77,7 @@
             this.txtMsg.Name = "txtMsg";
             this.txtMsg.Size = new System.Drawing.Size(465, 22);
             this.txtMsg.TabIndex = 2;
+            this.txtMsg.TextChanged += new System.EventHandler(this.txtMsg_TextChanged);
             this.txtMsg.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMsg_KeyPress);
             // 
             // toolStrip1
@@ -101,7 +103,7 @@
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton1.Text = "Modify Username";
+            this.toolStripButton1.Text = "Cambia Username";
             this.toolStripButton1.Click += new System.EventHandler(this.cambiaUsernameIcon_Click);
             // 
             // toolStripButton4
@@ -111,7 +113,7 @@
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton4.Text = "Save";
+            this.toolStripButton4.Text = "Salva Chat";
             this.toolStripButton4.Click += new System.EventHandler(this.saveIcon_Click);
             // 
             // toolStripButton2
@@ -121,7 +123,7 @@
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton2.Text = "info";
+            this.toolStripButton2.Text = "Info Utili";
             this.toolStripButton2.Click += new System.EventHandler(this.infoIcon_Click);
             // 
             // toolStripButton3
@@ -131,7 +133,6 @@
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton3.Text = "My Instagram";
             this.toolStripButton3.MouseLeave += new System.EventHandler(this.qrIcon_MouseLeave);
             this.toolStripButton3.MouseHover += new System.EventHandler(this.qrIcon_MousoOver);
             // 
@@ -142,8 +143,8 @@
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton5.Text = "Options";
-            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            this.toolStripButton5.Text = "Impostazioni(anche se mi clicchi non succede niente)";
+            this.toolStripButton5.Click += new System.EventHandler(this.impostazioniIcon_Click);
             // 
             // toolStripButton6
             // 
@@ -152,17 +153,31 @@
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
             this.toolStripButton6.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton6.Text = "Private Chat(not implemented yet)";
+            this.toolStripButton6.Text = "Chat Privata(non ancora implementata)";
+            // 
+            // lblConnessione
+            // 
+            this.lblConnessione.AutoSize = true;
+            this.lblConnessione.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
+            this.lblConnessione.Location = new System.Drawing.Point(149, 183);
+            this.lblConnessione.Name = "lblConnessione";
+            this.lblConnessione.Size = new System.Drawing.Size(352, 78);
+            this.lblConnessione.TabIndex = 5;
+            this.lblConnessione.Text = "Non sei connesso a nessuna rete\r\n                          o\r\nnon disponi dei per" +
+    "messi necessari";
+            this.lblConnessione.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(671, 470);
+            this.Controls.Add(this.lblConnessione);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.txtMsg);
             this.Controls.Add(this.btnInvia);
             this.Controls.Add(this.lstBoxMsg);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -170,6 +185,8 @@
             this.Text = "JustTalk";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -189,6 +206,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
+        private System.Windows.Forms.Label lblConnessione;
     }
 }
 
