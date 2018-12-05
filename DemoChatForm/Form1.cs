@@ -8,21 +8,30 @@ using System.Windows.Forms;
 using DemoChatForm.Class;
 using DemoChatForm.Page;
 using System.Windows.Input;
-using System.Windows.Interop;
+using System.Runtime.InteropServices;
 #endregion
 
 
 namespace DemoChatForm
 {
 # region COSE DA FARE
-    //all'arrivo di un messaggio con app chiusa cambia l'icona
-    //ctrl+alt+h minimizza il form ctrl+alt+s mostra il form
+    //all'arrivo di un messaggio con app chiusa cambia l'icona    
     //da mettere nelle impo la lingua(ita eng) e la stealth mode(non mostrarla nella taskbar) con un menu a tendina   
     //mettere "(ip)coso è entrato nella chat"
     
 #endregion
     public partial class Form1 : Form
     {
+        #region HotKey
+        //per registrare una hot key:  RegisterHotKey(this.Handle, [id numerico con cui verrà ricoonosciuta da wndproc], combotasti, (int)Keys.TASTO);
+        //tasti =  Alt = 1, Ctrl = 2, Shift = 4, Win = 8 (per metterne più assieme basta sommarli
+        //che fa cose è il metodo wndproc
+        [DllImport("user32.dll")]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
+        [DllImport("user32.dll")]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        #endregion
+        
         #region variabili  
         InvioUDP tx;
         riceviUDP rx;
@@ -31,20 +40,17 @@ namespace DemoChatForm
         private Icon MessNonLetto = new Icon(Resources.Notifica2, new Size(50, 50));
         private Icon Logo = new Icon(Resources.logo, new Size(50, 50));
         private QrCode code;
-
-        HotKey _hotKey = new HotKey(Key.F9, KeyModifier.Ctrl | KeyModifier.Alt, OnHotKeyHandler);
+        const int mostra = 2, nascondi = 1;
+        private KeyboardHook hook = new KeyboardHook();
         #endregion
 
         #region Eventi Del Form
-        private void OnHotKeyHandler(HotKey hotKey)
-        {
-            SystemHelper.SetScreenSaverRunning();
-        }
-
         public Form1()
         {
+           
+
             InitializeComponent();
-         
+            
             Username coso = new Username();
             coso.ControlBox = false;
             if (coso.ShowDialog() == DialogResult.OK)
@@ -56,8 +62,28 @@ namespace DemoChatForm
                 th1 = new Thread(ascolta);
                 th1.Start();
             }
-           
-        }      
+
+            #region HOTKEY           
+            RegisterHotKey(this.Handle, nascondi, 6, (int)Keys.H);
+            RegisterHotKey(this.Handle, mostra, 6, (int)Keys.S);
+            #endregion
+
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
+            {
+                this.Visible = false;   
+            }
+            else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
+            {
+                this.Visible = true;   
+            }
+            base.WndProc(ref m);
+        }
+
+       
         private void btnInvia_Click(object sender, EventArgs e)
         {
             if (txtMsg.Text != "")
@@ -77,28 +103,15 @@ namespace DemoChatForm
                 }
 
             }
-        }
-        private void form1_SizeChanged(object sender, EventArgs e)
-        {
-            if (this.Icon == MessNonLetto)
-            {
-                this.Icon = Logo;
-            }
-        }
+        }  
         private void form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            
             continua = false;
             th1.Abort();
         }
-        private void Form1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            if (e.Control && e.Alt && e.KeyCode == Keys.H)       // Ctrl-S Save
-            {               
-                this.WindowState = FormWindowState.Minimized;
-                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
-            }
-            
-        }
+
+       
         #endregion
 
         #region Server
@@ -107,6 +120,7 @@ namespace DemoChatForm
             string msg;
             while (continua)
             {
+       
                 msg = rx.ricevi();
                 if (msg.Contains( "<clear>"))
                 {
@@ -130,7 +144,7 @@ namespace DemoChatForm
         private void qrIcon_MousoOver(object sender, EventArgs e)
         {
             Qr = true;
-            code = new QrCode(Cursor.Position.X + 10, Cursor.Position.Y + 10);
+            code = new QrCode(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y+10);
             code.Show();
         }
         private void qrIcon_MouseLeave(object sender, EventArgs e)
@@ -177,7 +191,6 @@ namespace DemoChatForm
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
         }
-
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
             Point a = new Point(10, 20);
@@ -185,9 +198,10 @@ namespace DemoChatForm
             //coso.Show();
         }
 
-       
-
-        
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.KeyPreview = true;
+        }
 
         private void infoIcon_Click(object sender, EventArgs e)
         {

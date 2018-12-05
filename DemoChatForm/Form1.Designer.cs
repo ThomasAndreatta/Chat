@@ -48,17 +48,20 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstBoxMsg.FormattingEnabled = true;
-            this.lstBoxMsg.Location = new System.Drawing.Point(10, 35);
+            this.lstBoxMsg.ItemHeight = 16;
+            this.lstBoxMsg.Location = new System.Drawing.Point(13, 43);
+            this.lstBoxMsg.Margin = new System.Windows.Forms.Padding(4);
             this.lstBoxMsg.Name = "lstBoxMsg";
-            this.lstBoxMsg.Size = new System.Drawing.Size(472, 303);
+            this.lstBoxMsg.Size = new System.Drawing.Size(628, 372);
             this.lstBoxMsg.TabIndex = 0;
             // 
             // btnInvia
             // 
             this.btnInvia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnInvia.Location = new System.Drawing.Point(380, 344);
+            this.btnInvia.Location = new System.Drawing.Point(507, 423);
+            this.btnInvia.Margin = new System.Windows.Forms.Padding(4);
             this.btnInvia.Name = "btnInvia";
-            this.btnInvia.Size = new System.Drawing.Size(100, 23);
+            this.btnInvia.Size = new System.Drawing.Size(133, 28);
             this.btnInvia.TabIndex = 1;
             this.btnInvia.Text = "Invia";
             this.btnInvia.UseVisualStyleBackColor = true;
@@ -68,9 +71,10 @@
             // 
             this.txtMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMsg.Location = new System.Drawing.Point(10, 345);
+            this.txtMsg.Location = new System.Drawing.Point(13, 425);
+            this.txtMsg.Margin = new System.Windows.Forms.Padding(4);
             this.txtMsg.Name = "txtMsg";
-            this.txtMsg.Size = new System.Drawing.Size(350, 20);
+            this.txtMsg.Size = new System.Drawing.Size(465, 22);
             this.txtMsg.TabIndex = 2;
             this.txtMsg.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMsg_KeyPress);
             // 
@@ -86,7 +90,7 @@
             this.toolStripButton6});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(503, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(671, 27);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -152,19 +156,20 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(503, 382);
+            this.ClientSize = new System.Drawing.Size(671, 470);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.txtMsg);
             this.Controls.Add(this.btnInvia);
             this.Controls.Add(this.lstBoxMsg);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "JustTalk";
-            this.KeyPreview = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.form1_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);

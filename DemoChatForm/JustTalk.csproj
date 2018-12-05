@@ -77,6 +77,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classi\coso.cs" />
     <Compile Include="Classi\HotKey.cs" />
     <Compile Include="Classi\Notifica.cs">
       <SubType>Form</SubType>
