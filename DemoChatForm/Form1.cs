@@ -100,12 +100,13 @@ namespace DemoChatForm
         {
             if (msg.Contains("<clear>"))
             {
-                lstBoxMsg.Text = "";
+                txtMsg.Text = "";
                 lstBoxMsg.Items.Clear();
             }
             else
             {
                 tx.invia(msg);
+                txtMsg.Text = "";
             }
         }
         private void txtMsg_KeyPress(object sender, KeyPressEventArgs e)
@@ -186,7 +187,7 @@ namespace DemoChatForm
             {
                 msg = rx.ricevi();                
                 lstBoxMsg.Items.Add(msg);
-                if (this.MinimizeBox == true && !msg.Contains(tx.username.ToUpper()+" ENTRA NELLA CHAT"))
+                if (this.WindowState == FormWindowState.Maximized && !msg.Contains(tx.username.ToUpper()+" ENTRA NELLA CHAT"))
                 {
                     this.Icon = MessNonLetto;
                 }
