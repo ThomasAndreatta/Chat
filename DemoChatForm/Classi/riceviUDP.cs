@@ -19,7 +19,7 @@ namespace DemoChatForm.Class
         public  riceviUDP(int porta)
         {
             data = new byte[1024];
-            ipep = new IPEndPoint(IPAddress.Any, 9050);
+            ipep = new IPEndPoint(IPAddress.Any, porta);
             newsock = new UdpClient(ipep);
 
             string[] tmp = GetLocalIPAddress().Split('.');

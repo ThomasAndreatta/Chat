@@ -77,8 +77,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classi\coso.cs" />
-    <Compile Include="Classi\HotKey.cs" />
+    <Compile Include="Classi\KeyBoardHook.cs" />
     <Compile Include="Classi\Notifica.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +93,12 @@
     </Compile>
     <Compile Include="Page\Info.Designer.cs">
       <DependentUpon>Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Page\Log.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Page\Log.Designer.cs">
+      <DependentUpon>Log.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Page\Info.resx">
       <DependentUpon>Info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Page\Log.resx">
+      <DependentUpon>Log.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

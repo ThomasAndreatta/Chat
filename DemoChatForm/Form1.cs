@@ -9,13 +9,15 @@ using DemoChatForm.Class;
 using DemoChatForm.Page;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
+using System.Net;
 #endregion
 
 
 namespace DemoChatForm
 {
 # region COSE DA FARE
-   //inserire la chat privata tramite un form di inserimento ip e porta(check se disponibile, fruga in internet) da aprire in un nuovo thread con un socket tipo asky nel gioco:)
+   
+   //inserire la steath dalle impo assieme alla lingua(cercare di pescare la roba da un file e non da if dai
         
 #endregion
     public partial class Form1 : Form
@@ -34,6 +36,7 @@ namespace DemoChatForm
         InvioUDP tx;
         riceviUDP rx;
         private Thread th1;
+        private bool minimizato = false;
         private bool continua = true, Qr = false;
         private Icon MessNonLetto = new Icon(Resources.Notifica2, new Size(50, 50));
         private Icon Logo = new Icon(Resources.logo, new Size(50, 50));
@@ -67,13 +70,12 @@ namespace DemoChatForm
                     th1 = new Thread(ascolta);
                     th1.Start();
                     tx.invia($"                                   >>>({tx.ip}){tx.username.ToUpper()} ENTRA NELLA CHAT<<<", 1);
-                }
-               
+                }               
             }
             
             #region HOTKEY           
-            RegisterHotKey(this.Handle, nascondi, 6, (int)Keys.H);
-            RegisterHotKey(this.Handle, mostra, 6, (int)Keys.S);
+            RegisterHotKey(this.Handle, nascondi, 6, (int)Keys.Q);
+            RegisterHotKey(this.Handle, mostra, 6, (int)Keys.W);
             #endregion
 
         }        
@@ -81,11 +83,11 @@ namespace DemoChatForm
         {
             if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
             {
-                this.Visible = false;                
+                this.WindowState = FormWindowState.Minimized;                
             }
             else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
             {
-                this.Visible = true;   
+                this.WindowState = FormWindowState.Normal;
             }
             base.WndProc(ref m);
         }       
@@ -132,9 +134,10 @@ namespace DemoChatForm
         }
         private void Form1_Resize(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Maximized)
+            if (minimizato)
             {
                 this.Icon = Logo;
+                minimizato = !minimizato;
             }
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -187,9 +190,10 @@ namespace DemoChatForm
             {
                 msg = rx.ricevi();                
                 lstBoxMsg.Items.Add(msg);
-                if (this.WindowState == FormWindowState.Maximized && !msg.Contains(tx.username.ToUpper()+" ENTRA NELLA CHAT"))
+                if (this.WindowState == FormWindowState.Minimized && !msg.Contains(tx.username.ToUpper()+" ENTRA NELLA CHAT"))
                 {
                     this.Icon = MessNonLetto;
+                    minimizato = !minimizato;
                 }
                 
             }
@@ -201,7 +205,8 @@ namespace DemoChatForm
         {
             Username newUsername = new Username();
             if (newUsername.ShowDialog() == DialogResult.OK)
-            {
+            {                
+                tx.invia($"                                   >>>{tx.username.ToUpper()} HA CAMBIATO NOME IN {newUsername.username}<<<", 1);
                 tx.CambiaUsername(newUsername.username);
             }
         }
@@ -254,10 +259,12 @@ namespace DemoChatForm
                 }
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
-        }
+        }      
         private void impostazioniIcon_Click(object sender, EventArgs e)
         {
-            this.Icon = MessNonLetto;
+            Point a = new Point(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y -40);
+           Notifica not = new Notifica("Ti ho detto che non funziono.", 5, a);
+            not.Show();
         }     
         private void infoIcon_Click(object sender, EventArgs e)
         {

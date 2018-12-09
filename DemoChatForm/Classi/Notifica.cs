@@ -36,7 +36,7 @@ namespace DemoChatForm.Class
             this.FormBorderStyle = FormBorderStyle.None;
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
             time = second;
-            timer.Interval =70;
+            timer.Interval =second*10;
             timer.Tick += Timer_Tick;
             timer.Start();
             x = point.X;
