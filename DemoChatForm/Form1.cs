@@ -10,6 +10,7 @@ using DemoChatForm.Page;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Net;
+using System.Collections.Generic;
 #endregion
 
 
@@ -18,7 +19,7 @@ namespace DemoChatForm
 # region COSE DA FARE
    
    //inserire la steath dalle impo assieme alla lingua(cercare di pescare la roba da un file e non da if dai
-        
+        //ogni volta che qualcuno entra ed esce c'è da aggiornare lo struct listautenti e mostrarlo al click dell'immagine in un piccolo form con una tabella indirizzi e username.
 #endregion
     public partial class Form1 : Form
     {
@@ -32,8 +33,15 @@ namespace DemoChatForm
         public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         #endregion
         
-        #region variabili  
+        #region variabili 
+        private struct indirizzi
+        {
+            public List<string> nomi;
+            public List<IPAddress> ip;
+        }
+        private indirizzi listaUtenti;
         InvioUDP tx;
+        private int CountPersone = 0;
         riceviUDP rx;
         private Thread th1;
         private bool minimizato = false;
@@ -49,7 +57,10 @@ namespace DemoChatForm
         #region Eventi Del Form
         public Form1()
         {           
-            InitializeComponent();            
+            InitializeComponent();
+            listaUtenti = new indirizzi();
+            listaUtenti.nomi = new List<string>();
+            listaUtenti.ip = new List<IPAddress>();
             Username coso = new Username();
             coso.ControlBox = false;
             if (coso.ShowDialog() == DialogResult.OK)
@@ -124,6 +135,8 @@ namespace DemoChatForm
         }  
         private void form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            tx.invia($"                                   >>>{tx.username.ToUpper()} ESCE DALLA CHAT<<<", 1);
+
             try
             {
                 th1.Abort();
@@ -195,7 +208,19 @@ namespace DemoChatForm
                     this.Icon = MessNonLetto;
                     minimizato = !minimizato;
                 }
-                
+
+                if (msg.Contains("ENTRA NELLA CHAT"))
+                {
+                    
+                    CountPersone++;
+                    lblPersone.Text = ""+CountPersone;
+                }
+                if (msg.Contains("ESCE NELLA CHAT"))
+                {
+                    CountPersone--;
+                    lblPersone.Text = "" + CountPersone;
+                }
+
             }
         }
         #endregion
