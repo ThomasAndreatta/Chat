@@ -13,24 +13,31 @@ namespace DemoChatForm.Class
     {
         static byte[] data;       
         static UdpClient server;
-        public string ip = "";
-        public string username = " ";
-        public  InvioUDP()
+        private string ipServer = "";
+        private string username = " ";
+        private string ip = " ";
+
+        public string IpServer { get => ipServer;  }
+        public string Username { get => username;  }
+        public string Ip { get => ip;  }
+
+        public InvioUDP()
         {
             data = new byte[1024];
             // invio in broadcast
+            ip = GetLocalIPAddress();
             string[] tmp = GetLocalIPAddress().Split('.');
             tmp[3] = "255";
             for (int i = 0; i < tmp.Length; i++)
             {
                 if (i<3)
                 {
-                    ip += tmp[i] + ".";
+                    ipServer += tmp[i] + ".";
                 }
                 else
-                ip += tmp[i];
+                    ipServer += tmp[i];
             }
-            server = new UdpClient(ip, 9050);       
+            server = new UdpClient(IpServer, 9050);       
             
         }
         private string GetLocalIPAddress()
@@ -51,14 +58,14 @@ namespace DemoChatForm.Class
         {
             username = nome;
         }
-        public void invia(string msg)
+        public void Invia(string msg)
          {
             data = Encoding.ASCII.GetBytes(username +">"+ msg);
             server.Send(data, data.Length);
         }
-        public void invia(string msg,int n)
+        public void Invia(string msg,int n)
         {
-            data = Encoding.ASCII.GetBytes("" + msg);
+            data = Encoding.ASCII.GetBytes(ip+"|"+username+"|"+ msg);
             server.Send(data, data.Length);
         }
     }
