@@ -4,16 +4,16 @@ using System.Windows.Forms;
 
 using System.Net;
 
-namespace DemoChatForm.Page
+namespace DemoChatForm.Forms //in caso riuscissi ad implementare una chat privata
 {
     public partial class Log : Form
     {
 #region variabili
-        public string username;
-        public IPAddress ip;
-        public int port;
-        public string nome;
-        public bool PortaOkay = true;
+        private string username;
+        private IPAddress ip;
+        private int port;
+        private string nome;
+        private bool PortaOkay = true;
         private bool errore = false;
 #endregion
         public Log()
@@ -47,7 +47,7 @@ namespace DemoChatForm.Page
             if (PortaOkay && txt_IP.Text != "" && textBox1.Text!="" )
             {               
               
-                    if (controlloIP(txt_IP.Text))
+                    if (ControlloIP(txt_IP.Text))
                     {
                         return true;
                     }
@@ -64,10 +64,10 @@ namespace DemoChatForm.Page
                 return false;
             }
         }    
-        private bool controlloIP(string IPdaControllare)
+        private bool ControlloIP(string IPdaControllare)
         {
-            IPAddress coso;
-            bool thisGood = IPAddress.TryParse(IPdaControllare, out coso);
+            IPAddress tmp_Address;
+            bool thisGood = IPAddress.TryParse(IPdaControllare, out tmp_Address);
             try
             {
                 string[] s = IPdaControllare.Split('.');
@@ -84,9 +84,8 @@ namespace DemoChatForm.Page
             {
                 return false;
             }            
-        }                     
-      
-        private void txt_Porta_TextChanged(object sender, EventArgs e)
+        }                           
+        private void Txt_Porta_TextChanged(object sender, EventArgs e)
         {
             if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)/*&& port >= 49152 && port <= 65535*/ )
             {

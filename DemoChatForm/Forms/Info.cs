@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DemoChatForm.Page
+namespace DemoChatForm.Forms
 {
     public partial class Info : Form
     {
@@ -19,7 +19,7 @@ namespace DemoChatForm.Page
             this.TopMost = true;
             if (true)//inglese
             {
-                label1.Text = "Per nascondere la chat premere: \"Ctrl+Shift+H\", per farla riapparire premere: \"Ctrl+Shift+S\"\n" +
+                label1.Text = "Per nascondere la chat premere: \"Ctrl+Shift+Q\", per farla riapparire premere: \"Ctrl+Shift+W\"\n" +
                     "Per ripulire la chat inserire \"<clear>\" e inviare.\n" +
                     "";
             }

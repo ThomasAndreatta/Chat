@@ -1,4 +1,4 @@
-﻿namespace DemoChatForm.Page
+﻿namespace DemoChatForm.Forms
 {
     partial class QrCode
     {

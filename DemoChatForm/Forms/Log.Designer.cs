@@ -1,4 +1,4 @@
-﻿namespace DemoChatForm.Page
+﻿namespace DemoChatForm.Forms
 {
     partial class Log
     {
@@ -72,7 +72,7 @@
             this.txt_Porta.Size = new System.Drawing.Size(100, 20);
             this.txt_Porta.TabIndex = 3;
             this.txt_Porta.Text = "50000";
-            this.txt_Porta.TextChanged += new System.EventHandler(this.txt_Porta_TextChanged);
+            this.txt_Porta.TextChanged += new System.EventHandler(this.Txt_Porta_TextChanged);
             // 
             // label3
             // 

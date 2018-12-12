@@ -88,16 +88,16 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Classi\InvioUDP.cs" />
-    <Compile Include="Page\Info.cs">
+    <Compile Include="Forms\Info.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Page\Info.Designer.cs">
+    <Compile Include="Forms\Info.Designer.cs">
       <DependentUpon>Info.cs</DependentUpon>
     </Compile>
-    <Compile Include="Page\Log.cs">
+    <Compile Include="Forms\Log.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Page\Log.Designer.cs">
+    <Compile Include="Forms\Log.Designer.cs">
       <DependentUpon>Log.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -107,17 +107,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Page\QrCode.cs">
+    <Compile Include="Forms\QrCode.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Page\QrCode.Designer.cs">
+    <Compile Include="Forms\QrCode.Designer.cs">
       <DependentUpon>QrCode.cs</DependentUpon>
     </Compile>
     <Compile Include="Classi\riceviUDP.cs" />
-    <Compile Include="Page\Username.cs">
+    <Compile Include="Forms\Username.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Page\Username.Designer.cs">
+    <Compile Include="Forms\Username.Designer.cs">
       <DependentUpon>Username.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Classi\Notifica.resx">
@@ -126,10 +126,10 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Page\Info.resx">
+    <EmbeddedResource Include="Forms\Info.resx">
       <DependentUpon>Info.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Page\Log.resx">
+    <EmbeddedResource Include="Forms\Log.resx">
       <DependentUpon>Log.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -137,10 +137,10 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Page\QrCode.resx">
+    <EmbeddedResource Include="Forms\QrCode.resx">
       <DependentUpon>QrCode.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Page\Username.resx">
+    <EmbeddedResource Include="Forms\Username.resx">
       <DependentUpon>Username.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">

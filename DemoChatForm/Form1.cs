@@ -6,8 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using DemoChatForm.Class;
-using DemoChatForm.Page;
-using System.Windows.Input;
+using DemoChatForm.Forms;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.Collections.Generic;
@@ -28,9 +27,9 @@ namespace DemoChatForm
         //tasti =  Alt = 1, Ctrl = 2, Shift = 4, Win = 8 (per metterne più assieme basta sommarli
         //che fa cose è il metodo wndproc
         [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
         [DllImport("user32.dll")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         #endregion
 
         #region variabili 
@@ -40,9 +39,9 @@ namespace DemoChatForm
             public List<IPAddress> ip;
         }
         private Indirizzi listaUtenti = new Indirizzi();
-        InvioUDP tx;
+        private InvioUDP trasmettitore;
         private int CountPersone = 0;
-        riceviUDP rx;
+        private riceviUDP ricevente;
         private Thread th1;
         private bool minimizato = false;
         private bool continua = true, Qr = false;
@@ -51,7 +50,6 @@ namespace DemoChatForm
         private QrCode code;
         const int mostra = 2, nascondi = 1;
         private KeyboardHook hook = new KeyboardHook();
-
         #endregion
 
         #region Eventi Del Form
@@ -61,13 +59,13 @@ namespace DemoChatForm
 
             listaUtenti.nomi = new List<string>();
             listaUtenti.ip = new List<IPAddress>();
-            Username coso = new Username();
-            coso.ControlBox = false;
-            if (coso.ShowDialog() == DialogResult.OK)
+            Username FormUsername = new Username();
+            FormUsername.ControlBox = false;
+            if (FormUsername.ShowDialog() == DialogResult.OK)
             {
                 CheckForIllegalCrossThreadCalls = false;
-                tx = new InvioUDP();
-                if (tx.IpServer.Contains("127.0"))
+                trasmettitore = new InvioUDP();
+                if (trasmettitore.IpServer.Contains("127.0"))
                 {
                     lstBoxMsg.Visible = false;
                     btnInvia.Visible = false;
@@ -76,11 +74,11 @@ namespace DemoChatForm
                 }
                 else
                 {
-                    tx.CambiaUsername(coso.username);
-                    rx = new riceviUDP(9050);
+                    trasmettitore.CambiaUsername(FormUsername.Username_Proprieties);
+                    ricevente = new riceviUDP(9050);
                     th1 = new Thread(Ascolta);
                     th1.Start();
-                    tx.Invia($"                                   >>>({tx.Ip}){tx.Username.ToUpper()} ENTRA NELLA CHAT<<<", 1);
+                    trasmettitore.Invia($"                                   >>>({trasmettitore.Ip}){trasmettitore.Username.ToUpper()} ENTRA NELLA CHAT<<<", 1);
                 }
             }
 
@@ -90,41 +88,17 @@ namespace DemoChatForm
             #endregion
 
         }
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
-            {
-                this.WindowState = FormWindowState.Minimized;
-            }
-            else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
-            {
-                this.WindowState = FormWindowState.Normal;
-            }
-            base.WndProc(ref m);
-        }
+     
         private void BtnInvia_Click(object sender, EventArgs e)
         {
             if (txtMsg.Text != "")
             {
                 Invio(txtMsg.Text);
             }
-        }
-        private void Invio(string msg)
-        {
-            if (msg.Contains("<clear>"))
-            {
-                txtMsg.Text = "";
-                lstBoxMsg.Items.Clear();
-            }
-            else
-            {
-                tx.Invia(msg);
-                txtMsg.Text = "";
-            }
-        }
+        }       
         private void TxtMsg_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 13)
+            if (e.KeyChar == 13) //tasto invio
             {
                 if (txtMsg.Text != "")
                 {
@@ -135,7 +109,7 @@ namespace DemoChatForm
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            tx.Invia($"                                   >>>{tx.Username.ToUpper()} ESCE DALLA CHAT<<<", 1);
+            trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} ESCE DALLA CHAT<<<", 1);
 
             try
             {
@@ -178,7 +152,7 @@ namespace DemoChatForm
 
             }
         }
-        private void TxtMsg_TextChanged(object sender, EventArgs e)
+        private void TxtMsg_TextChanged(object sender, EventArgs e)//rubato da stackoverflow
         {
             if (txtMsg.Text.Length <= 0) return;
             string s = txtMsg.Text.Substring(0, 1);
@@ -192,7 +166,40 @@ namespace DemoChatForm
                 txtMsg.SelectionStart = curSelStart;
                 txtMsg.SelectionLength = curSelLength;
             }
+        }        
+        #endregion
+
+        #region Logiche
+        private void Invio(string msg)
+        {
+            if (msg.Contains("<clear>"))
+            {
+                txtMsg.Text = "";
+                lstBoxMsg.Items.Clear();
+            }
+            else
+            {
+                trasmettitore.Invia(msg);
+                txtMsg.Text = "";
+            }
         }
+        private void AggiornaLbl()
+        {
+            lblPersone.Text = "" + listaUtenti.nomi.Count;
+        }
+        protected override void WndProc(ref Message m) //hotkey
+        {
+            if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
+            {
+                this.WindowState = FormWindowState.Minimized;
+            }
+            else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+            base.WndProc(ref m);
+        }
+
         #endregion
 
         #region Server
@@ -201,9 +208,9 @@ namespace DemoChatForm
             string msg;
             while (continua)
             {
-                msg = rx.ricevi();
+                msg = ricevente.ricevi();
 
-                if (this.WindowState == FormWindowState.Minimized && !msg.Contains(tx.Username.ToUpper() + " ENTRA NELLA CHAT"))
+                if (this.WindowState == FormWindowState.Minimized && !msg.Contains(trasmettitore.Username.ToUpper() + " ENTRA NELLA CHAT"))
                 {
                     this.Icon = MessNonLetto;
                     minimizato = !minimizato;
@@ -215,9 +222,9 @@ namespace DemoChatForm
                     listaUtenti.ip.Add(IPAddress.Parse(msg.Split('|')[0]));
                     listaUtenti.nomi.Add(msg.Split('|')[1]);
                     CountPersone++;
-                    aggiornaLbl();
+                    AggiornaLbl();
                     lstBoxMsg.Items.Add(msg.Split('|')[2]);
-                    tx.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + ritornaIp() + "|" + ritornaNomi());
+                    trasmettitore.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + RitornaIp() + "|" + RitornaNomi());
                 }
                 if (msg.Contains("ESCE DALLA CHAT"))//ip|nome|msg
                 {
@@ -225,16 +232,16 @@ namespace DemoChatForm
                     listaUtenti.nomi.Remove(msg.Split('|')[1]);
                     lstBoxMsg.Items.Add(msg.Split('|')[2]);
                     CountPersone--;
-                    aggiornaLbl();
+                    AggiornaLbl();
                 }
                 if (msg.Contains("struct§ù§") && Convert.ToInt32(msg.Split('|')[1]) > CountPersone) //struct§ù§|numero|ip|username
                 {
-                    leggiIp(msg.Split('|')[2], msg.Split('|')[3], Convert.ToInt32(msg.Split('|')[1]));
+                    LeggiIp(msg.Split('|')[2], msg.Split('|')[3], Convert.ToInt32(msg.Split('|')[1]));
                 }
                 #endregion
             }
         }
-        private void leggiIp(string listoneIp, string listoneNomi, int numero)
+        private void LeggiIp(string listoneIp, string listoneNomi, int numero)
         {
             listaUtenti.ip.RemoveAll((x) => x != null);
             listaUtenti.nomi.RemoveAll((x) => x != null);
@@ -243,9 +250,9 @@ namespace DemoChatForm
                 listaUtenti.ip.Add(IPAddress.Parse(listoneIp.Split('-')[i]));
                 listaUtenti.nomi.Add(listoneIp.Split('-')[i]);
             }
-            aggiornaLbl();
+            AggiornaLbl();
         }
-        private string ritornaIp()
+        private string RitornaIp()
         {
             string listaIp = "";
             foreach (var item in listaUtenti.ip)
@@ -254,7 +261,7 @@ namespace DemoChatForm
             }
             return listaIp;
         }
-        private string ritornaNomi()
+        private string RitornaNomi()
         {
             string coso = "";
             foreach (var item in listaUtenti.nomi)
@@ -262,20 +269,17 @@ namespace DemoChatForm
                 coso += item + "-";
             }
             return coso;
-        }
+        }      
         #endregion
-        private void aggiornaLbl()
-        {
-            lblPersone.Text = "" + listaUtenti.nomi.Count;
-        }
+     
         #region Icone
         private void CambiaUsernameIcon_Click(object sender, EventArgs e)
         {
             Username newUsername = new Username();
             if (newUsername.ShowDialog() == DialogResult.OK)
             {
-                tx.Invia($"                                   >>>{tx.Username.ToUpper()} HA CAMBIATO NOME IN {newUsername.username}<<<", 1);
-                tx.CambiaUsername(newUsername.username);
+                trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA CAMBIATO NOME IN {newUsername.Username_Proprieties}<<<", 1);
+                trasmettitore.CambiaUsername(newUsername.Username_Proprieties);
             }
         }
         private void QrIcon_MousoOver(object sender, EventArgs e)
@@ -328,12 +332,10 @@ namespace DemoChatForm
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
         }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void ListaUtenti_Icon_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(ritornaIp());
+            MessageBox.Show(RitornaIp());
         }
-
         private void ImpostazioniIcon_Click(object sender, EventArgs e)
         {
             Point a = new Point(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y - 40);
