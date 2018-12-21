@@ -19,6 +19,12 @@ namespace DemoChatForm
     #region COSE DA FARE
 
     //da sistemare lo stealth, quando non appare in task bar non funzionano più gli hotkey:(
+    //per mandare file maggiori di 50 kb van spezzati, mandando file|ip|numero seq|stringa, salvarli man mano che arrivano in un list(il primo pezzo ha il numero di pezzi delle stringhe e quindi si contano fin li) e una volta messi tutte le stringhe in un list rimetterle assieme e via
+    //per spezzettarlo si prende la dimensione del file, si guarda quante volte va diviso per avere una string da 50kb poi lo si divide per quel numero di volte e bom
+
+
+
+
     //MANDA => string content = Convert.ToBase64String(File.ReadAllBytes(< percorsoFile >));
     //RICEVI => File.WriteAllBytes(<nome> +<estensione>, Convert.FromBase64String(<stringa>));
    
