@@ -58,15 +58,26 @@ namespace DemoChatForm.Class
         {
             username = nome;
         }
-        public void Invia(string msg)
-         {
-            data = Encoding.ASCII.GetBytes(username +">"+ msg);
-            server.Send(data, data.Length);
-        }
+       
         public void Invia(string msg,int n)
         {
-            data = Encoding.ASCII.GetBytes(ip+"|"+username+"|"+ msg);
-            server.Send(data, data.Length);
+            if (n == 1)//msg norm
+            {
+                data = Encoding.ASCII.GetBytes(username + ">" + msg);
+                server.Send(data, data.Length);
+            }
+            else if(n== 2)//entra
+            {
+                data = Encoding.ASCII.GetBytes(ip + "|" + username + "|" + msg);
+                server.Send(data, data.Length);
+            }
+            else if(n==3)//struct
+            {
+                data = Encoding.ASCII.GetBytes(msg);
+                server.Send(data, data.Length);
+            }
+           
         }
+       
     }
 }

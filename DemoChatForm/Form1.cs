@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using DemoChatForm.Class;
+using DemoChatForm.Classi;
 using DemoChatForm.Forms;
 using System.Runtime.InteropServices;
 using System.Net;
@@ -17,8 +18,8 @@ namespace DemoChatForm
 {
     #region COSE DA FARE
 
-    //inserire la steath dalle impo assieme alla lingua(cercare di pescare la roba da un file e non da if dai
-    //ogni volta che qualcuno entra ed esce c'è da aggiornare lo struct listautenti e mostrarlo al click dell'immagine in un piccolo form con una tabella indirizzi e username.
+    //da sistemare lo stealth, quando non appare in task bar non funzionano più gli hotkey:(
+   
     #endregion
     public partial class Form1 : Form
     {
@@ -32,18 +33,13 @@ namespace DemoChatForm
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         #endregion
 
-        #region variabili 
-        private struct Indirizzi
-        {
-            public List<string> nomi;
-            public List<IPAddress> ip;
-        }
-        private Indirizzi listaUtenti = new Indirizzi();
+        #region variabili       
+        public Listone listaUtenti = new Listone();
         private InvioUDP trasmettitore;
         private int CountPersone = 0;
         private riceviUDP ricevente;
         private Thread th1;
-        private bool minimizato = false;
+        private bool minimizato = false, stealth = false;
         private bool continua = true, Qr = false;
         private Icon MessNonLetto = new Icon(Resources.Notifica2, new Size(51, 50));
         private Icon Logo = new Icon(Resources.logo, new Size(50, 50));
@@ -56,9 +52,8 @@ namespace DemoChatForm
         public Form1()
         {
             InitializeComponent();
-
-            listaUtenti.nomi = new List<string>();
-            listaUtenti.ip = new List<IPAddress>();
+            
+            
             Username FormUsername = new Username();
             FormUsername.ControlBox = false;
             if (FormUsername.ShowDialog() == DialogResult.OK)
@@ -78,7 +73,7 @@ namespace DemoChatForm
                     ricevente = new riceviUDP(9050);
                     th1 = new Thread(Ascolta);
                     th1.Start();
-                    trasmettitore.Invia($"                                   >>>({trasmettitore.Ip}){trasmettitore.Username.ToUpper()} ENTRA NELLA CHAT<<<", 1);
+                    trasmettitore.Invia($"                                   >>>({trasmettitore.Ip}){trasmettitore.Username.ToUpper()} ENTRA NELLA CHAT<<<", 2);
                 }
             }
 
@@ -87,8 +82,7 @@ namespace DemoChatForm
             RegisterHotKey(this.Handle, mostra, 6, (int)Keys.W);
             #endregion
 
-        }
-     
+        }     
         private void BtnInvia_Click(object sender, EventArgs e)
         {
             if (txtMsg.Text != "")
@@ -109,7 +103,7 @@ namespace DemoChatForm
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} ESCE DALLA CHAT<<<", 1);
+            trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} ESCE DALLA CHAT<<<", 2);
 
             try
             {
@@ -179,7 +173,7 @@ namespace DemoChatForm
             }
             else
             {
-                trasmettitore.Invia(msg);
+                trasmettitore.Invia("justalk"+msg,1);
                 txtMsg.Text = "";
             }
         }
@@ -191,15 +185,19 @@ namespace DemoChatForm
         {
             if (m.Msg == 0x0312 && m.WParam.ToInt32() == nascondi)
             {
+                if (stealth)
+                {
+                   this.ShowInTaskbar = false;
+                }
                 this.WindowState = FormWindowState.Minimized;
             }
             else if (m.Msg == 0x0312 && m.WParam.ToInt32() == mostra)
             {
                 this.WindowState = FormWindowState.Normal;
+                this.ShowInTaskbar = true;
             }
             base.WndProc(ref m);
         }
-
         #endregion
 
         #region Server
@@ -208,6 +206,7 @@ namespace DemoChatForm
             string msg;
             while (continua)
             {
+                bool aggiunto = false;
                 msg = ricevente.ricevi();
 
                 if (this.WindowState == FormWindowState.Minimized && !msg.Contains(trasmettitore.Username.ToUpper() + " ENTRA NELLA CHAT"))
@@ -215,16 +214,16 @@ namespace DemoChatForm
                     this.Icon = MessNonLetto;
                     minimizato = !minimizato;
                 }
-
                 #region ingressi e dati
-                if (msg.Contains("ENTRA NELLA CHAT"))//
+                if (msg.Contains("ENTRA NELLA CHAT"))
                 {
                     listaUtenti.ip.Add(IPAddress.Parse(msg.Split('|')[0]));
                     listaUtenti.nomi.Add(msg.Split('|')[1]);
                     CountPersone++;
                     AggiornaLbl();
                     lstBoxMsg.Items.Add(msg.Split('|')[2]);
-                    trasmettitore.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + RitornaIp() + "|" + RitornaNomi());
+                    trasmettitore.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + RitornaIp() + "|" + RitornaNomi(),3);
+                    aggiunto = true;
                 }
                 if (msg.Contains("ESCE DALLA CHAT"))//ip|nome|msg
                 {
@@ -233,22 +232,30 @@ namespace DemoChatForm
                     lstBoxMsg.Items.Add(msg.Split('|')[2]);
                     CountPersone--;
                     AggiornaLbl();
+                    aggiunto = true;
                 }
-                if (msg.Contains("struct§ù§") && Convert.ToInt32(msg.Split('|')[1]) > CountPersone) //struct§ù§|numero|ip|username
+                if (msg.Contains("struct???") && Convert.ToInt32(msg.Split('|')[1]) > CountPersone) //struct§ù§|numero|ip|username
                 {
                     LeggiIp(msg.Split('|')[2], msg.Split('|')[3], Convert.ToInt32(msg.Split('|')[1]));
+                    
+                    aggiunto = true;
+                }
+                else if(aggiunto == false && msg.Contains("justalk"))
+                {
+                    lstBoxMsg.Items.Add(msg.Remove(msg.IndexOf('j'),"justalk".Length));
                 }
                 #endregion
             }
         }
         private void LeggiIp(string listoneIp, string listoneNomi, int numero)
         {
-            listaUtenti.ip.RemoveAll((x) => x != null);
-            listaUtenti.nomi.RemoveAll((x) => x != null);
-            for (int i = 0; i <= numero; i++)
+            listoneIp.Remove(listoneIp.Length - 1);
+            listaUtenti.ip.Clear();           
+            listaUtenti.nomi.Clear();
+            for (int i = 0; i < numero; i++)
             {
                 listaUtenti.ip.Add(IPAddress.Parse(listoneIp.Split('-')[i]));
-                listaUtenti.nomi.Add(listoneIp.Split('-')[i]);
+                listaUtenti.nomi.Add(listoneNomi.Split('-')[i]);
             }
             AggiornaLbl();
         }
@@ -259,7 +266,7 @@ namespace DemoChatForm
             {
                 listaIp += item + "-";
             }
-            return listaIp;
+            return listaIp.Remove(listaIp.Length-1);
         }
         private string RitornaNomi()
         {
@@ -268,7 +275,7 @@ namespace DemoChatForm
             {
                 coso += item + "-";
             }
-            return coso;
+            return coso.Remove(coso.Length-1);
         }      
         #endregion
      
@@ -331,20 +338,25 @@ namespace DemoChatForm
                 }
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
-        }
-        private void ListaUtenti_Icon_Click(object sender, EventArgs e)
+        }   
+        private void IconaUtenti_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(RitornaIp());
+            
+            FormUtenti formutenti = new FormUtenti(listaUtenti);
+            formutenti.Show();
         }
         private void ImpostazioniIcon_Click(object sender, EventArgs e)
         {
-            Point a = new Point(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y - 40);
-            Notifica not = new Notifica("Ti ho detto che non funziono.", 5, a);
-            not.Show();
+            //Point a = new Point(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y - 40);
+            //Notifica not = new Notifica("Ti ho detto che non funziono.", 5, a);
+            //not.Show();
+            Impostazioni impo = new Impostazioni(stealth);
+            impo.ShowDialog();
+            stealth =  impo.Lol;
+           
         }
         private void InfoIcon_Click(object sender, EventArgs e)
         {
-
             Info info = new Info();
             info.Show();
         }

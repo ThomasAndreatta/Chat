@@ -81,6 +81,7 @@
     <Compile Include="Classi\Notifica.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Classi\Listone.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,11 +89,23 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Classi\InvioUDP.cs" />
+    <Compile Include="Forms\Impostazioni.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Impostazioni.Designer.cs">
+      <DependentUpon>Impostazioni.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Info.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Info.Designer.cs">
       <DependentUpon>Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormUtenti.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormUtenti.Designer.cs">
+      <DependentUpon>FormUtenti.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Log.cs">
       <SubType>Form</SubType>
@@ -126,8 +139,14 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Impostazioni.resx">
+      <DependentUpon>Impostazioni.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Info.resx">
       <DependentUpon>Info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUtenti.resx">
+      <DependentUpon>FormUtenti.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Log.resx">
       <DependentUpon>Log.cs</DependentUpon>
