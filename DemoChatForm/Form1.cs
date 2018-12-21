@@ -19,6 +19,8 @@ namespace DemoChatForm
     #region COSE DA FARE
 
     //da sistemare lo stealth, quando non appare in task bar non funzionano più gli hotkey:(
+    //MANDA => string content = Convert.ToBase64String(File.ReadAllBytes(< percorsoFile >));
+    //RICEVI => File.WriteAllBytes(<nome> +<estensione>, Convert.FromBase64String(<stringa>));
    
     #endregion
     public partial class Form1 : Form
@@ -52,8 +54,8 @@ namespace DemoChatForm
         public Form1()
         {
             InitializeComponent();
-            
-            
+            CheckForIllegalCrossThreadCalls = false;
+
             Username FormUsername = new Username();
             FormUsername.ControlBox = false;
             if (FormUsername.ShowDialog() == DialogResult.OK)
@@ -222,7 +224,7 @@ namespace DemoChatForm
                     CountPersone++;
                     AggiornaLbl();
                     lstBoxMsg.Items.Add(msg.Split('|')[2]);
-                    trasmettitore.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + RitornaIp() + "|" + RitornaNomi(),3);
+                    trasmettitore.Invia("struct§ù§|" + listaUtenti.nomi.Count + "|" + RitornaIp() + "|" + RitornaNomi(), 3);
                     aggiunto = true;
                 }
                 if (msg.Contains("ESCE DALLA CHAT"))//ip|nome|msg
@@ -234,17 +236,47 @@ namespace DemoChatForm
                     AggiornaLbl();
                     aggiunto = true;
                 }
+                if (msg.Contains("HA INVIATO"))//ip|nome|msg
+                {
+                   
+                    lstBoxMsg.Items.Add(msg);
+                    
+                   
+                    aggiunto = true;
+                }
                 if (msg.Contains("struct???") && Convert.ToInt32(msg.Split('|')[1]) > CountPersone) //struct§ù§|numero|ip|username
                 {
                     LeggiIp(msg.Split('|')[2], msg.Split('|')[3], Convert.ToInt32(msg.Split('|')[1]));
-                    
+
                     aggiunto = true;
                 }
-                else if(aggiunto == false && msg.Contains("justalk"))
+                if (aggiunto == false && msg.Contains("file") && msg.Split('|')[1] != trasmettitore.Username)//"file"|username|file in stringa|nome del file|estensione
                 {
-                    lstBoxMsg.Items.Add(msg.Remove(msg.IndexOf('j'),"justalk".Length));
+                    try
+                    {
+                        if (MessageBox.Show($"{msg.Split('|')[1]} vuole inviarti {msg.Split('|')[3] }" +
+                       $"\n Premere OK per scaricare", "File", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                        {
+                            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + msg.Split('|')[3];
+                            File.WriteAllBytes(path, Convert.FromBase64String(msg.Split('|')[2]));
+
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                        
+                    }
+                   
+                    aggiunto = true;
                 }
-                #endregion
+                    else if (aggiunto == false && msg.Contains("justalk"))
+                    {
+                        lstBoxMsg.Items.Add(msg.Remove(msg.IndexOf('j'), "justalk".Length));
+                    }
+                   
+                    #endregion
+                
             }
         }
         private void LeggiIp(string listoneIp, string listoneNomi, int numero)
@@ -338,7 +370,29 @@ namespace DemoChatForm
                 }
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
-        }   
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog filedamandare = new OpenFileDialog();
+            if (filedamandare.ShowDialog() == DialogResult.OK)
+            {
+                long length = new System.IO.FileInfo(filedamandare.FileName).Length;
+                if (length > 50000)
+                {
+                    MessageBox.Show("File troppo pesante, massimo 50kb");
+                }
+                else
+                {
+                    string content = Convert.ToBase64String(File.ReadAllBytes(filedamandare.FileName));
+                    string msg = content + "|" + Path.GetFileName(filedamandare.FileName) +
+                                        "|" + Path.GetExtension(filedamandare.FileName);
+                    trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA INVIATO {Path.GetFileName(filedamandare.FileName)}<<<", 3);
+                    trasmettitore.Invia(msg, 4);
+                }                
+            }
+        }
+
         private void IconaUtenti_Click(object sender, EventArgs e)
         {
             

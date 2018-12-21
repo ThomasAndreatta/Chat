@@ -1,22 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 using DemoChatForm.Classi;
 namespace DemoChatForm.Forms
 {
     public partial class FormUtenti : Form
     {
+        private List<string> nominativi;
+        private List<string> ip;
+       
         public FormUtenti(Listone lista)
         {
+            nominativi = lista.nomi;
+            ip = lista.IpList();
             InitializeComponent();
-            for (int i = 0; i < lista.ip.Count; i++)
+            for (int i = 0; i < ip.Count; i++)
             {             
-                dataGridView1.Rows.Add(lista.nomi[i], lista.ip[i].ToString());
+                dataGridView1.Rows.Add(nominativi[i], ip[i]);
             }
-            
-        }
+            dataGridView1.Height = DgvHeight();           
+           
+            //this.ClientSize = new System.Drawing.Size(dataGridView1.Size.Width, textBox1.Top + textBox1.Size.Height + 10);
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        }
+        private int DgvHeight()
+        {
+            int sum = this.dataGridView1.ColumnHeadersHeight;
+
+            foreach (DataGridViewRow row in this.dataGridView1.Rows)
+                sum += row.Height ; // I dont think the height property includes the cell border size, so + 1
+
+            return sum-3;
+        }
+        private void ToolStripButton1_Click(object sender, EventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
 
@@ -38,5 +56,7 @@ namespace DemoChatForm.Forms
                 MessageBox.Show("IP list saved as: " + save.FileName);
             }
         }
+
+     
     }
 }

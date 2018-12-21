@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Banana.ico" />
+    <None Include="Resources\allegato.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

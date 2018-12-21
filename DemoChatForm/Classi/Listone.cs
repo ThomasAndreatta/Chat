@@ -22,9 +22,14 @@ namespace DemoChatForm.Classi
             ip = new List<IPAddress>();
         }
 
-        public void AddIp(IPAddress ipp)
+        public List<string> IpList()
         {
-
+            List<string> ritorno = new List<string>();
+            foreach (var item in ip)
+            {
+                ritorno.Add(Convert.ToString(item));
+            }
+            return ritorno;
         }
     }
 }

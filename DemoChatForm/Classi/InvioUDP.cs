@@ -76,7 +76,12 @@ namespace DemoChatForm.Class
                 data = Encoding.ASCII.GetBytes(msg);
                 server.Send(data, data.Length);
             }
-           
+            else if (n == 4)//file
+            {
+                data = Encoding.ASCII.GetBytes("file|"+username+"|"+ msg);
+                server.Send(data, data.Length);
+            }
+
         }
        
     }
