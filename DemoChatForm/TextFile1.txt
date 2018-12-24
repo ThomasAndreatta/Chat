@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp3
+{
+    class Program
+    {
+        static private string oggetto="";
+        static private string ext = "";
+        static void Main(string[] args)
+        {
+            string tmp = @"C:\Users\Marco Andreatta\Desktop\thomas\aa.rar";
+            Console.WriteLine("Percorso file: "+tmp);           
+            Console.WriteLine("________________________");
+            string estensione = "rar";
+            Console.WriteLine("estensione file: "+estensione);           
+            Console.WriteLine("________________________");
+            string content = Convert.ToBase64String(File.ReadAllBytes(tmp));
+            
+            spezzetta(content,estensione);
+
+            
+            Console.WriteLine("scritto come coso");
+            Console.ReadKey();
+        }
+
+        static private void spezzetta(string str,string ext)
+        {
+            string ip = "192.168.1.41";
+           
+            int numFramm = (System.Text.ASCIIEncoding.Unicode.GetByteCount(str) / 50000) + 1;//conta quante volte va diviso in file da 50kb e aggiunge 1 in caso sia 13,9 volte
+            string msg = "";//messaggio che verrà mandato
+            for (int i = 0; i <= numFramm; i++)
+            {
+                if (str.Length >= 24999)
+                    msg = str.Substring(0, 24999); // ora il msg vale 50 kb
+                else
+                    msg = str.Substring(0, str.Length);
+
+                if (i == numFramm)                
+                    msg = ip + "|" + numFramm + "|" + i + "|" + msg+"|"+ext;                
+                else
+                    msg = ip + "|" + numFramm + "|" + i + "|" + msg;
+
+
+                ricrea(msg);//qui invio il mess
+
+                if (str.Length >= 24999)
+                    str = str.Remove(0, 24999);// ora il msg vale 50 kb
+                else
+                    str = str.Remove(0, str.Length);
+
+            }
+        }
+
+        static void ricrea(string msg)
+        {
+            int numeroTot = Convert.ToInt32(msg.Split('|')[1]);
+            int numeroSeq = Convert.ToInt32(msg.Split('|')[2]);
+            string str = msg.Split('|')[3];
+
+            if (msg.Split('|')[0] == "192.168.1.41")
+            {
+                if (numeroTot >numeroSeq)
+                {
+                    oggetto += str;
+                    Console.WriteLine($"{numeroSeq} su {numeroTot}");
+                }
+                    
+                if (numeroSeq == numeroTot)
+                {
+                    oggetto += str;
+                    ext = msg.Split('|')[4];
+                    File.WriteAllBytes("coso."+ext, Convert.FromBase64String(oggetto));
+                    Console.WriteLine($"{numeroSeq} su {numeroTot}");
+                }    
+            }
+
+        }
+    }
+}

@@ -19,11 +19,12 @@ namespace DemoChatForm
     #region COSE DA FARE
 
     //da sistemare lo stealth, quando non appare in task bar non funzionano più gli hotkey:(
-    //per mandare file maggiori di 50 kb van spezzati, mandando file|ip|numero seq|stringa, salvarli man mano che arrivano in un list(il primo pezzo ha il numero di pezzi delle stringhe e quindi si contano fin li) e una volta messi tutte le stringhe in un list rimetterle assieme e via
-    //per spezzettarlo si prende la dimensione del file, si guarda quante volte va diviso per avere una string da 50kb poi lo si divide per quel numero di volte e bom
 
-
-
+    //per mandare file maggiori di 50 kb van spezzati, mandando file|ip|numero seq|stringa, salvarli man mano 
+    //che arrivano in un list(il primo pezzo ha il numero di pezzi delle stringhe e quindi si contano fin li) e una volta
+    //messi tutte le stringhe in un list rimetterle assieme e via
+    //per spezzettarlo si prende la dimensione del file, si guarda quante volte va diviso per avere una
+    //string da 50kb poi lo si divide per quel numero di volte e bom
 
     //MANDA => string content = Convert.ToBase64String(File.ReadAllBytes(< percorsoFile >));
     //RICEVI => File.WriteAllBytes(<nome> +<estensione>, Convert.FromBase64String(<stringa>));
@@ -41,7 +42,8 @@ namespace DemoChatForm
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         #endregion
 
-        #region variabili       
+        #region variabili   
+        private string savingPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\Nuova Cartella";
         public Listone listaUtenti = new Listone();
         private InvioUDP trasmettitore;
         private int CountPersone = 0;
@@ -181,7 +183,7 @@ namespace DemoChatForm
             }
             else
             {
-                trasmettitore.Invia("justalk"+msg,1);
+                trasmettitore.Invia(msg,1);
                 txtMsg.Text = "";
             }
         }
@@ -206,6 +208,68 @@ namespace DemoChatForm
             }
             base.WndProc(ref m);
         }
+
+         private void spezzetta(string percorso, string ext, string nome)
+        {
+            string content = Convert.ToBase64String(File.ReadAllBytes(percorso));
+            int numFramm = (System.Text.ASCIIEncoding.Unicode.GetByteCount(content) / 50000) + 1;//conta quante volte va diviso in file da 50kb e aggiunge 1 in caso sia 13,9 volte
+            string msg = "";//messaggio che verrà mandato
+            for (int i = 0; i <= numFramm; i++)
+            {
+                if (content.Length >= 24999)
+                    msg = content.Substring(0, 24999); // ora il msg vale 50 kb
+                else
+                    msg = content.Substring(0, content.Length);
+
+                if (i == numFramm)
+                    msg = nome+"|"+ numFramm + "|" + i + "|" + msg + "|" + ext;
+                else
+                    msg = nome + "|" + numFramm + "|" + i + "|" + msg;
+
+
+                trasmettitore.Invia(msg,4);//qui invio il mess
+
+                if (content.Length >= 24999)
+                    content = content.Remove(0, 24999);// ora il msg vale 50 kb
+                else
+                    content = content.Remove(0, content.Length);
+
+            }
+        }
+
+        List<string> MessaggiInArrivo = new List<string>();
+        private string oggetto = "";
+        private void ricrea(string msg)
+        {
+            int numeroTot = Convert.ToInt32(msg.Split('|')[3]);
+            int numeroSeq = Convert.ToInt32(msg.Split('|')[4]);
+            string str = msg.Split('|')[5];
+
+            if (MessaggiInArrivo.Contains(msg.Split('|')[1]))
+            {
+                if (numeroTot > numeroSeq)
+                {
+                    oggetto += str;
+                    label1.Text = $"{numeroSeq} su {numeroTot}";
+                }
+
+                if (numeroSeq == numeroTot)
+                {
+                    oggetto += str;
+                    string ext = msg.Split('|')[5];
+
+                    string path = savingPath+"\\"+msg.Split('|')[2] ;
+
+                    File.WriteAllBytes(path, Convert.FromBase64String(oggetto));
+                    MessaggiInArrivo.Remove(msg.Split('|')[1]);
+                    oggetto = "";
+
+                    label1.Text = "";
+                }
+            }
+
+        }
+
         #endregion
 
         #region Server
@@ -256,27 +320,28 @@ namespace DemoChatForm
 
                     aggiunto = true;
                 }
-                if (aggiunto == false && msg.Contains("file") && msg.Split('|')[1] != trasmettitore.Username)//"file"|username|file in stringa|nome del file|estensione
+                if (aggiunto == false && msg.Contains("file") && !MessaggiInArrivo.Contains(msg.Split('|')[1]) /*&& msg.Split('|')[1] != trasmettitore.Ip*/)//"file"|username|file in stringa|nome del file|estensione
                 {
-                    try
-                    {
+                    MessaggiInArrivo.Add(msg.Split('|')[1]);
                         if (MessageBox.Show($"{msg.Split('|')[1]} vuole inviarti {msg.Split('|')[3] }" +
                        $"\n Premere OK per scaricare", "File", MessageBoxButtons.OKCancel) == DialogResult.OK)
                         {
-                            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + msg.Split('|')[3];
-                            File.WriteAllBytes(path, Convert.FromBase64String(msg.Split('|')[2]));
-
+                            ricrea(msg);
                         }
-                    }
-                    catch (Exception)
-                    {
-
-                        
-                    }
+                   
                    
                     aggiunto = true;
                 }
-                    else if (aggiunto == false && msg.Contains("justalk"))
+                if (aggiunto == false && msg.Contains("file") && MessaggiInArrivo.Contains(msg.Split('|')[1]) /*&& msg.Split('|')[1] != trasmettitore.Ip*/)//"file"|username|file in stringa|nome del file|estensione
+                {
+                    
+                        ricrea(msg);
+                    
+
+
+                    aggiunto = true;
+                }
+                else if (aggiunto == false && msg.Contains("justalk"))
                     {
                         lstBoxMsg.Items.Add(msg.Remove(msg.IndexOf('j'), "justalk".Length));
                     }
@@ -386,18 +451,29 @@ namespace DemoChatForm
                 long length = new System.IO.FileInfo(filedamandare.FileName).Length;
                 if (length > 50000)
                 {
-                    MessageBox.Show("File troppo pesante, massimo 50kb");
+                    new Thread(() =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;                        
+                        spezzetta(filedamandare.FileName, Path.GetExtension(filedamandare.FileName), Path.GetFileName(filedamandare.FileName));
+                        trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA INVIATO {Path.GetFileName(filedamandare.FileName)}<<<", 3);
+                        
+                    }).Start();
+                   
                 }
                 else
                 {
-                    string content = Convert.ToBase64String(File.ReadAllBytes(filedamandare.FileName));
-                    string msg = content + "|" + Path.GetFileName(filedamandare.FileName) +
-                                        "|" + Path.GetExtension(filedamandare.FileName);
+                    new Thread(() =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        spezzetta(filedamandare.FileName, Path.GetExtension(filedamandare.FileName), Path.GetFileName(filedamandare.FileName));
+                    }).Start();
                     trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA INVIATO {Path.GetFileName(filedamandare.FileName)}<<<", 3);
-                    trasmettitore.Invia(msg, 4);
+                   
                 }                
             }
         }
+
+       
 
         private void IconaUtenti_Click(object sender, EventArgs e)
         {
@@ -407,13 +483,11 @@ namespace DemoChatForm
         }
         private void ImpostazioniIcon_Click(object sender, EventArgs e)
         {
-            //Point a = new Point(System.Windows.Forms.Cursor.Position.X + 10, System.Windows.Forms.Cursor.Position.Y - 40);
-            //Notifica not = new Notifica("Ti ho detto che non funziono.", 5, a);
-            //not.Show();
-            Impostazioni impo = new Impostazioni(stealth);
+            
+            Impostazioni impo = new Impostazioni(stealth, savingPath);
             impo.ShowDialog();
             stealth =  impo.Lol;
-           
+            savingPath = impo.Path;
         }
         private void InfoIcon_Click(object sender, EventArgs e)
         {

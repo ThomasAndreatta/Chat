@@ -63,7 +63,7 @@ namespace DemoChatForm.Class
         {
             if (n == 1)//msg norm
             {
-                data = Encoding.ASCII.GetBytes(username + ">" + msg);
+                data = Encoding.ASCII.GetBytes(username + ">" +"justalk"+ msg);
                 server.Send(data, data.Length);
             }
             else if(n== 2)//entra
@@ -78,7 +78,7 @@ namespace DemoChatForm.Class
             }
             else if (n == 4)//file
             {
-                data = Encoding.ASCII.GetBytes("file|"+username+"|"+ msg);
+                data = Encoding.ASCII.GetBytes("file|"+ip+"|"+ msg);
                 server.Send(data, data.Length);
             }
 

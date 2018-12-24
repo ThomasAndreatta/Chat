@@ -197,6 +197,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Banana.ico" />
+    <Content Include="TextFile1.txt" />
+    <None Include="Resources\3 dots.png" />
     <None Include="Resources\allegato.png" />
   </ItemGroup>
   <ItemGroup>

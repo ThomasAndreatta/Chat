@@ -63,6 +63,16 @@ namespace DemoChatForm.Properties {
         /// <summary>
         ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap _3_dots {
+            get {
+                object obj = ResourceManager.GetObject("3 dots", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap allegato {
             get {
                 object obj = ResourceManager.GetObject("allegato", resourceCulture);
