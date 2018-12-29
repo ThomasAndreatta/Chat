@@ -39,13 +39,13 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.lblConnessione = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblPersone = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pic_persone = new System.Windows.Forms.PictureBox();
+            this.lblPersoneOnline = new System.Windows.Forms.Label();
+            this.Pic_Allegato = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pic_persone)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Pic_Allegato)).BeginInit();
             this.SuspendLayout();
             // 
             // lstBoxMsg
@@ -162,38 +162,39 @@
     "messi necessari";
             this.lblConnessione.Visible = false;
             // 
-            // pictureBox1
+            // pic_persone
             // 
-            this.pictureBox1.Image = global::DemoChatForm.Properties.Resources.persono;
-            this.pictureBox1.Location = new System.Drawing.Point(603, 5);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(23, 22);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 6;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.IconaUtenti_Click);
+            this.pic_persone.Image = global::DemoChatForm.Properties.Resources.persono;
+            this.pic_persone.Location = new System.Drawing.Point(603, 5);
+            this.pic_persone.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pic_persone.Name = "pic_persone";
+            this.pic_persone.Size = new System.Drawing.Size(23, 22);
+            this.pic_persone.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pic_persone.TabIndex = 6;
+            this.pic_persone.TabStop = false;
+            this.pic_persone.Click += new System.EventHandler(this.IconaUtenti_Click);
             // 
-            // lblPersone
+            // lblPersoneOnline
             // 
-            this.lblPersone.AutoSize = true;
-            this.lblPersone.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, ((System.Drawing.FontStyle)(((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic) 
+            this.lblPersoneOnline.AutoSize = true;
+            this.lblPersoneOnline.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, ((System.Drawing.FontStyle)(((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic) 
                 | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPersone.Location = new System.Drawing.Point(632, 5);
-            this.lblPersone.Name = "lblPersone";
-            this.lblPersone.Size = new System.Drawing.Size(0, 20);
-            this.lblPersone.TabIndex = 7;
+            this.lblPersoneOnline.Location = new System.Drawing.Point(630, 5);
+            this.lblPersoneOnline.Name = "lblPersoneOnline";
+            this.lblPersoneOnline.Size = new System.Drawing.Size(29, 20);
+            this.lblPersoneOnline.TabIndex = 7;
+            this.lblPersoneOnline.Text = "....";
             // 
-            // pictureBox2
+            // Pic_Allegato
             // 
-            this.pictureBox2.Image = global::DemoChatForm.Properties.Resources.allegato;
-            this.pictureBox2.Location = new System.Drawing.Point(13, 423);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(24, 24);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 8;
-            this.pictureBox2.TabStop = false;
-            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
+            this.Pic_Allegato.Image = global::DemoChatForm.Properties.Resources.allegato;
+            this.Pic_Allegato.Location = new System.Drawing.Point(13, 423);
+            this.Pic_Allegato.Name = "Pic_Allegato";
+            this.Pic_Allegato.Size = new System.Drawing.Size(24, 24);
+            this.Pic_Allegato.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.Pic_Allegato.TabIndex = 8;
+            this.Pic_Allegato.TabStop = false;
+            this.Pic_Allegato.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // label1
             // 
@@ -209,9 +210,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(671, 470);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.lblPersone);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.Pic_Allegato);
+            this.Controls.Add(this.lblPersoneOnline);
+            this.Controls.Add(this.pic_persone);
             this.Controls.Add(this.lblConnessione);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.txtMsg);
@@ -229,8 +230,8 @@
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pic_persone)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Pic_Allegato)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -248,9 +249,9 @@
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.Label lblConnessione;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lblPersone;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox pic_persone;
+        private System.Windows.Forms.Label lblPersoneOnline;
+        private System.Windows.Forms.PictureBox Pic_Allegato;
         private System.Windows.Forms.Label label1;
     }
 }

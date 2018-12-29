@@ -20,11 +20,7 @@ namespace DemoChatForm
 
     //da sistemare lo stealth, quando non appare in task bar non funzionano più gli hotkey:(
 
-    //per mandare file maggiori di 50 kb van spezzati, mandando file|ip|numero seq|stringa, salvarli man mano 
-    //che arrivano in un list(il primo pezzo ha il numero di pezzi delle stringhe e quindi si contano fin li) e una volta
-    //messi tutte le stringhe in un list rimetterle assieme e via
-    //per spezzettarlo si prende la dimensione del file, si guarda quante volte va diviso per avere una
-    //string da 50kb poi lo si divide per quel numero di volte e bom
+    
 
     //MANDA => string content = Convert.ToBase64String(File.ReadAllBytes(< percorsoFile >));
     //RICEVI => File.WriteAllBytes(<nome> +<estensione>, Convert.FromBase64String(<stringa>));
@@ -43,11 +39,13 @@ namespace DemoChatForm
         #endregion
 
         #region variabili   
+        private bool connesso = false;
         private string savingPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\Nuova Cartella";
         public Listone listaUtenti = new Listone();
         private InvioUDP trasmettitore;
         private int CountPersone = 0;
         private riceviUDP ricevente;
+       
         private Thread th1;
         private bool minimizato = false, stealth = false;
         private bool continua = true, Qr = false;
@@ -62,31 +60,29 @@ namespace DemoChatForm
         public Form1()
         {
             InitializeComponent();
+            trasmettitore = new InvioUDP();
             CheckForIllegalCrossThreadCalls = false;
-
+            ricevente = new riceviUDP(9050);
+            th1 = new Thread(Ascolta);
+            th1.Start();
+           
             Username FormUsername = new Username();
             FormUsername.ControlBox = false;
             if (FormUsername.ShowDialog() == DialogResult.OK)
             {
                 CheckForIllegalCrossThreadCalls = false;
-                trasmettitore = new InvioUDP();
+                trasmettitore.CambiaUsername(FormUsername.Username_Proprieties);
                 if (trasmettitore.IpServer.Contains("127.0"))
-                {
-                    lstBoxMsg.Visible = false;
-                    btnInvia.Visible = false;
-                    txtMsg.Visible = false;
-                    lblConnessione.Visible = true;
+                {            
+                    aggiornaSitua(2);
                 }
                 else
-                {
-                    trasmettitore.CambiaUsername(FormUsername.Username_Proprieties);
-                    ricevente = new riceviUDP(9050);
-                    th1 = new Thread(Ascolta);
-                    th1.Start();
-                    trasmettitore.Invia($"                                   >>>({trasmettitore.Ip}){trasmettitore.Username.ToUpper()} ENTRA NELLA CHAT<<<", 2);
+                {                    
+                    aggiornaSitua(1);
                 }
             }
-
+            
+            
             #region HOTKEY           
             RegisterHotKey(this.Handle, nascondi, 6, (int)Keys.Q);
             RegisterHotKey(this.Handle, mostra, 6, (int)Keys.W);
@@ -189,7 +185,7 @@ namespace DemoChatForm
         }
         private void AggiornaLbl()
         {
-            lblPersone.Text = "" + listaUtenti.nomi.Count;
+            lblPersoneOnline.Text = "" + listaUtenti.nomi.Count;
         }
         protected override void WndProc(ref Message m) //hotkey
         {
@@ -208,8 +204,7 @@ namespace DemoChatForm
             }
             base.WndProc(ref m);
         }
-
-         private void spezzetta(string percorso, string ext, string nome)
+         /*private void spezzetta(string percorso, string ext, string nome)
         {
             string content = Convert.ToBase64String(File.ReadAllBytes(percorso));
             int numFramm = (System.Text.ASCIIEncoding.Unicode.GetByteCount(content) / 50000) + 1;//conta quante volte va diviso in file da 50kb e aggiunge 1 in caso sia 13,9 volte
@@ -237,38 +232,8 @@ namespace DemoChatForm
             }
         }
 
-        List<string> MessaggiInArrivo = new List<string>();
-        private string oggetto = "";
-        private void ricrea(string msg)
-        {
-            int numeroTot = Convert.ToInt32(msg.Split('|')[3]);
-            int numeroSeq = Convert.ToInt32(msg.Split('|')[4]);
-            string str = msg.Split('|')[5];
-
-            if (MessaggiInArrivo.Contains(msg.Split('|')[1]))
-            {
-                if (numeroTot > numeroSeq)
-                {
-                    oggetto += str;
-                    label1.Text = $"{numeroSeq} su {numeroTot}";
-                }
-
-                if (numeroSeq == numeroTot)
-                {
-                    oggetto += str;
-                    string ext = msg.Split('|')[5];
-
-                    string path = savingPath+"\\"+msg.Split('|')[2] ;
-
-                    File.WriteAllBytes(path, Convert.FromBase64String(oggetto));
-                    MessaggiInArrivo.Remove(msg.Split('|')[1]);
-                    oggetto = "";
-
-                    label1.Text = "";
-                }
-            }
-
-        }
+       */
+      
 
         #endregion
 
@@ -320,27 +285,20 @@ namespace DemoChatForm
 
                     aggiunto = true;
                 }
-                if (aggiunto == false && msg.Contains("file") && !MessaggiInArrivo.Contains(msg.Split('|')[1]) /*&& msg.Split('|')[1] != trasmettitore.Ip*/)//"file"|username|file in stringa|nome del file|estensione
+                if (aggiunto == false && msg.Contains("file")  && msg.Split('|')[1] != trasmettitore.Ip)//"file"|username|file in stringa|nome del file|estensione
                 {
-                    MessaggiInArrivo.Add(msg.Split('|')[1]);
+                    
                         if (MessageBox.Show($"{msg.Split('|')[1]} vuole inviarti {msg.Split('|')[3] }" +
                        $"\n Premere OK per scaricare", "File", MessageBoxButtons.OKCancel) == DialogResult.OK)
                         {
-                            ricrea(msg);
-                        }
+                        string path = savingPath + "\\" + msg.Split('|')[3];
+                        File.WriteAllBytes(path, Convert.FromBase64String(msg.Split('|')[2]));
+                    }
                    
                    
                     aggiunto = true;
                 }
-                if (aggiunto == false && msg.Contains("file") && MessaggiInArrivo.Contains(msg.Split('|')[1]) /*&& msg.Split('|')[1] != trasmettitore.Ip*/)//"file"|username|file in stringa|nome del file|estensione
-                {
-                    
-                        ricrea(msg);
-                    
-
-
-                    aggiunto = true;
-                }
+                
                 else if (aggiunto == false && msg.Contains("justalk"))
                     {
                         lstBoxMsg.Items.Add(msg.Remove(msg.IndexOf('j'), "justalk".Length));
@@ -442,39 +400,63 @@ namespace DemoChatForm
                 MessageBox.Show("Chat saved as: " + save.FileName);
             }
         }
-
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             OpenFileDialog filedamandare = new OpenFileDialog();
             if (filedamandare.ShowDialog() == DialogResult.OK)
             {
                 long length = new System.IO.FileInfo(filedamandare.FileName).Length;
-                if (length > 50000)
+                if (length <= 50000)
                 {
-                    new Thread(() =>
-                    {
-                        Thread.CurrentThread.IsBackground = true;                        
-                        spezzetta(filedamandare.FileName, Path.GetExtension(filedamandare.FileName), Path.GetFileName(filedamandare.FileName));
-                        trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA INVIATO {Path.GetFileName(filedamandare.FileName)}<<<", 3);
-                        
-                    }).Start();
-                   
+                    string content = Convert.ToBase64String(File.ReadAllBytes(filedamandare.FileName));
+                    trasmettitore.Invia(content+"|"+Path.GetFileName(filedamandare.FileName), 4);
+
                 }
                 else
                 {
-                    new Thread(() =>
-                    {
-                        Thread.CurrentThread.IsBackground = true;
-                        spezzetta(filedamandare.FileName, Path.GetExtension(filedamandare.FileName), Path.GetFileName(filedamandare.FileName));
-                    }).Start();
-                    trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} HA INVIATO {Path.GetFileName(filedamandare.FileName)}<<<", 3);
-                   
+                    Point a = new Point(Pic_Allegato.Location.X, Pic_Allegato.Location.Y);
+                    Notifica tmp = new Notifica("File troppo grande, dimensioni massime 50kb", 7, a);
+                    tmp.Show();
                 }                
             }
         }
 
        
+        private void aggiornaSitua(int variabile)
+        {
+            if (variabile == 1)//connesso
+            {
+                lblPersoneOnline.Visible = true;
+                listaUtenti.ip.Clear();
+                listaUtenti.nomi.Clear();
+                AggiornaLbl();
+                lstBoxMsg.Items.Clear();
+                trasmettitore.Invia($"                                   >>>({trasmettitore.Ip}){trasmettitore.Username.ToUpper()} ENTRA NELLA CHAT<<<", 2);
+                connesso = true;
+                lstBoxMsg.Visible = true;
+                btnInvia.Visible = true;
+                txtMsg.Visible = true;
+                lblConnessione.Visible = false;
+                Pic_Allegato.Visible = true;
+                pic_persone.Visible = true;
+               
+            }
+            else//non connesso
+            {
+                trasmettitore.Invia($"                                   >>>{trasmettitore.Username.ToUpper()} ESCE DALLA CHAT<<<", 2);
 
+                lstBoxMsg.Items.Clear();
+                connesso = false;
+                lstBoxMsg.Visible = false;
+                btnInvia.Visible = false;
+                txtMsg.Visible = false;
+                lblConnessione.Visible = true;
+                Pic_Allegato.Visible = false;
+                pic_persone.Visible = false;
+                lblPersoneOnline.Visible = false;
+            }
+            
+        }
         private void IconaUtenti_Click(object sender, EventArgs e)
         {
             
